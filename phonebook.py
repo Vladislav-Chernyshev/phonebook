@@ -33,16 +33,33 @@ def create(gb_phone_book: list, user_data: list) -> list:
     return gb_phone_book
 
 
-def update():
-    pass
+def find_user(gb_phone_book: list) -> list:
+    sur_name = input('Введите фамилию для поиска: ').lower()
+    for user in gb_phone_book:
+        if user[0].lower().startswith(sur_name):
+            print(f'По вашему запросу найдена запись: {user}\n')
+            return user
+    else:
+        print('Такого человека нет в справочнике')
 
 
-def delete():
-    pass
+def update(gb_phone_book: list) -> list:
+    ind = gb_phone_book.index(find_user(gb_phone_book))
+    gb_phone_book[ind] = get_user_data()
+    print(f'Данные обновлены на {gb_phone_book[ind]}\n')
+    return gb_phone_book
 
 
-def print_phone_book(global_phone_book: list) -> None:
-    for user in global_phone_book:
+def delete(gb_phone_book: list) -> list:
+    user = find_user(gb_phone_book)
+    if user is not None:
+        gb_phone_book.remove(user)
+        print(f'Запись {user} удалена.\n')
+        return gb_phone_book
+
+
+def print_phone_book(gb_phone_book: list) -> None:
+    for user in gb_phone_book:
         print(user)
 
 
@@ -55,7 +72,17 @@ def import_data(gb_phone_book: list, file_name: str, delimiter: str) -> list:
     with open(path_source, 'r', encoding='utf-8') as source:
         for line in source:
             gb_phone_book = create(gb_phone_book, line.strip().split(delimiter))
+        print(f'Данные импортированы из файла {file_name}\n')
     return gb_phone_book
+
+
+def export_data(gb_phone_book: list, file_name: str, delimiter: str):
+    path_source = os.path.join('.', file_name)
+    with open(path_source, 'w', encoding='utf-8') as source:
+        for line in gb_phone_book:
+            user = f'{line[0]}{delimiter}{line[1]}{delimiter}{line[2]}{delimiter}{line[3]}\n'
+            source.write(user)
+        print(f'Данные экспортированы в файл {file_name}\n')
 
 
 def menu():
@@ -69,13 +96,20 @@ def menu():
             return 0
         elif choice == 2:
             phone_book = create(phone_book, get_user_data())
+        elif choice == 3:
+            find_user(phone_book)
+        elif choice == 4:
+            update(phone_book)
+        elif choice == 5:
+            delete(phone_book)
         elif choice == 6:
             print_phone_book(phone_book)
         elif choice == 7:
             phone_book = import_data(phone_book, get_file_name(), ',')
+        elif choice == 8:
+            export_data(phone_book, get_file_name(), ',')
         else:
             print('Выбран некорректный пункт меню!\n')
 
 
 menu()
-#startwith
